@@ -23,28 +23,57 @@ class HairColor(Enum):
 
 
 class Location(BaseModel):
-    city: str
-    state: str
-    country: str
+    city: str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        example="Soyapango"
+    )
+    state: str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        example="San Salvador"
+    )
+    country: str = Field(
+        ...,
+        min_length=1,
+        max_length=30,
+        example="El Salvador"
+    )
 
 class Person(BaseModel):
     first_name: str = Field(
         ..., 
         min_length=1,
-        max_length=50
+        max_length=50,
+        example="Eduardo"
     )
     last_name: str = Field(
         ..., 
         min_length=1,
-        max_length=50
+        max_length=50,
+        example="Alvarado"
     )
     age: int = Field(
         ...,
         gt=0,
-        le=115
+        le=115,
+        example=18
     )
-    hair_color: Optional[HairColor] = Field(default=None)
-    is_married: Optional[bool] = Field(default=None)
+    hair_color: Optional[HairColor] = Field(default=None, example=HairColor.black)
+    is_married: Optional[bool] = Field(default=None, example=False)
+
+    # class Config:
+    #     schema_extra = {
+    #         "example": {
+    #             "first_name": "Daniel",
+    #             "last_name": "Salmerón Alvarado",
+    #             "age": 18,
+    #             "hair_color": "black",
+    #             "is_married": False
+    #         }
+    #     }
 
 @app.get("/")
 def home():
@@ -99,7 +128,7 @@ def update_person(
         gt=0
     ),
     person: Person = Body(...),
-    location: Location = Body(...)
+    location: Location = Body(...),
 ):
     results = person.dict()
     results.update(location.dict())
